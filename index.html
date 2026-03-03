@@ -392,7 +392,7 @@ body { font-family: 'Tajawal', sans-serif; background: var(--mist); min-height: 
 </div>
 
 <!-- ══════════ APP PAGE ══════════ -->
-<div id="appPage">
+<div id="appPage" style="display:none">
   <div class="header">
     <div class="header-top">
       <div class="brand">
@@ -612,26 +612,35 @@ function doLogin() {
   const u = document.getElementById('lu').value.trim().toLowerCase();
   const p = document.getElementById('lp').value;
   const err = document.getElementById('loginErr');
-  const loading = document.getElementById('loginLoading');
   const btn = document.getElementById('loginBtn');
 
+  if (!u || !p) { err.style.display = 'block'; return; }
   err.style.display = 'none';
+  btn.disabled = true; btn.textContent = '⏳ جاري التحقق...';
 
-  const users = window._allUsers || {};
-  // Check all users
-  const match = Object.entries(users).find(([id, usr]) =>
-    (usr.username || id).toLowerCase() === u && usr.password === p
-  );
-
-  if (match) {
-    currentUser = { id: match[0], ...match[1] };
-    // Save to cookie for auto-login
-    setCookie('ali_user', JSON.stringify({ id: match[0], username: u, password: p }));
-    showApp();
-  } else {
-    err.style.display = 'block';
-    document.getElementById('lp').value = '';
+  // Wait for users to load if not yet available
+  function attemptLogin() {
+    const users = window._allUsers || {};
+    if (!Object.keys(users).length) {
+      // Firebase not loaded yet — retry in 500ms
+      btn.textContent = '⏳ جاري الاتصال...';
+      setTimeout(attemptLogin, 500);
+      return;
+    }
+    const match = Object.entries(users).find(([id, usr]) =>
+      (usr.username || id).toLowerCase() === u && usr.password === p
+    );
+    btn.disabled = false; btn.textContent = '🔐 دخول';
+    if (match) {
+      currentUser = { id: match[0], ...match[1] };
+      setCookie('ali_user', JSON.stringify({ id: match[0], username: u, password: p }));
+      showApp();
+    } else {
+      err.style.display = 'block';
+      document.getElementById('lp').value = '';
+    }
   }
+  attemptLogin();
 }
 
 function showApp() {
@@ -678,26 +687,34 @@ document.addEventListener('click', e => {
 // ══════════════════════════════════════════════
 function tryAutoLogin() {
   const saved = getCookie('ali_user');
-  if (!saved) return;
+  if (!saved) return false;
   try {
     const { id, username, password } = JSON.parse(saved);
     const users = window._allUsers || {};
+    if (!Object.keys(users).length) return false;
     const match = Object.entries(users).find(([uid, usr]) =>
       uid === id && (usr.username || uid).toLowerCase() === username && usr.password === password
     );
     if (match) {
       currentUser = { id: match[0], ...match[1] };
       showApp();
+      return true;
     } else {
       deleteCookie('ali_user');
+      return false;
     }
-  } catch(e) { deleteCookie('ali_user'); }
+  } catch(e) { deleteCookie('ali_user'); return false; }
 }
 
-// Try auto-login when users load
-window.addEventListener('usersLoaded', () => {
+// Try auto-login — works whether Firebase loads before or after this script
+function onUsersReady() {
   if (!currentUser) tryAutoLogin();
-});
+}
+if (window._allUsers && Object.keys(window._allUsers).length > 0) {
+  onUsersReady();
+} else {
+  window.addEventListener('usersLoaded', onUsersReady, { once: true });
+}
 
 // ══════════════════════════════════════════════
 //  FIREBASE LISTENERS
