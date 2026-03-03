@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>نظام طلبات الليل — علي الناهي</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -437,6 +437,7 @@ let editingOrderId = null;
 let soundEnabled = true;
 let knownOrderIds = new Set();
 let audioCtx = null;
+let currentReceiptId = null;
 
 // ── SOUND ──
 function initAudio() {
@@ -814,59 +815,332 @@ function openReceipt(id) {
     ${o.notes?`<div style="background:#FFFBEB;border-radius:10px;padding:10px;margin-bottom:16px;font-size:12px;color:#92400E;">📝 ملاحظة: ${o.notes}</div>`:''}
     <div class="receipt-footer">شكراً لتسوقك معنا 🙏<br>نوصل لجميع محافظات العراق 🇮🇶</div>`;
 
+  currentReceiptId=id;
   document.getElementById('receiptModal').classList.add('open');
 }
 
 function closeReceipt() { document.getElementById('receiptModal').classList.remove('open'); }
 
 async function saveReceiptAsImage() {
-  const el=document.getElementById('receiptContent');
-  const btn=document.querySelector('.btn-save-img');
-  if(btn){btn.disabled=true;btn.textContent='...';}
+  const btn = document.querySelector('.btn-save-img');
+  if (btn) { btn.disabled = true; btn.textContent = '...'; }
   showToast('\u23f3 \u062c\u0627\u0631\u064a...');
-  try{
-    if(document.fonts&&document.fonts.ready) await document.fonts.ready;
-    await new Promise(r=>setTimeout(r,350));
-    const canvas=await html2canvas(el,{
-      scale:3,backgroundColor:'#ffffff',useCORS:true,
-      logging:false,imageTimeout:0,allowTaint:true,
-      onclone:(doc)=>{
-        const st=doc.createElement('style');
-        st.textContent='*{font-family:Tajawal,Arial,sans-serif!important;letter-spacing:normal!important;word-spacing:normal!important;}';
-        doc.head.insertBefore(st,doc.head.firstChild);
-      }
-    });
-    const dataUrl=canvas.toDataURL('image/png',1.0);
-    const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
-    if(isIOS){
+  try {
+    const dataUrl = await buildReceiptCanvas();
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (isIOS) {
       showSaveOverlay(dataUrl);
-    }else{
-      const lnk=document.createElement('a');
-      lnk.download='ali-alnahi-'+Date.now()+'.png';
-      lnk.href=dataUrl;lnk.click();
+    } else {
+      const lnk = document.createElement('a');
+      lnk.download = 'ali-alnahi-' + Date.now() + '.png';
+      lnk.href = dataUrl; lnk.click();
       showToast('\u2705 \u062a\u0645 \u062d\u0641\u0638!');
     }
-  }catch(err){showToast('\u274c \u062e\u0637\u0623');console.error(err);}
-  if(btn){btn.disabled=false;btn.textContent='\u2913 \u062d\u0641\u0638 \u0643\u0635\u0648\u0631\u0629';}
+  } catch(err) {
+    console.error(err);
+    showToast('\u274c \u062e\u0637\u0623: ' + err.message);
+  }
+  if (btn) { btn.disabled = false; btn.textContent = '\u2913 \u062d\u0641\u0638 \u0643\u0635\u0648\u0631\u0629'; }
 }
-function showSaveOverlay(dataUrl){
-  const ex=document.getElementById('imgSaveOv');if(ex)ex.remove();
-  const ov=document.createElement('div');
-  ov.id='imgSaveOv';
-  Object.assign(ov.style,{position:'fixed',inset:'0',background:'rgba(0,0,0,0.93)',zIndex:'9999',display:'flex',flexDirection:'column',alignItems:'center',padding:'16px',overflowY:'auto',webkitOverflowScrolling:'touch',gap:'14px'});
-  const tip=document.createElement('div');
-  Object.assign(tip.style,{flexShrink:'0',width:'100%',maxWidth:'440px',color:'#F59E0B',fontFamily:'Tajawal,sans-serif',fontSize:'15px',fontWeight:'700',textAlign:'center',direction:'rtl',background:'rgba(245,158,11,0.15)',border:'1px solid rgba(245,158,11,0.4)',padding:'14px',borderRadius:'14px',lineHeight:'1.9'});
-  tip.innerHTML='\u0627\u0636\u063a\u0637 \u0645\u0637\u0648\u0644\u0627\u064b \u0639\u0644\u0649 \u0627\u0644\u0635\u0648\u0631\u0629 \u062b\u0645 \u0627\u062e\u062a\u0631 <b>\"\u062d\u0641\u0638 \u0627\u0644\u0635\u0648\u0631\u0629\"</b>';
-  const cb=document.createElement('button');
-  Object.assign(cb.style,{flexShrink:'0',background:'rgba(255,255,255,0.12)',color:'white',border:'1px solid rgba(255,255,255,0.25)',padding:'11px 36px',borderRadius:'30px',fontFamily:'Tajawal,sans-serif',fontSize:'14px',fontWeight:'700',cursor:'pointer'});
-  cb.textContent='\u0625\u063a\u0644\u0627\u0642';
-  cb.addEventListener('click',()=>ov.remove());
-  const img=document.createElement('img');
-  img.src=dataUrl;
-  Object.assign(img.style,{width:'100%',maxWidth:'440px',borderRadius:'14px',display:'block'});
-  ov.appendChild(tip);ov.appendChild(cb);ov.appendChild(img);
+
+// Draw receipt directly on Canvas — no html2canvas, no font issues
+async function buildReceiptCanvas() {
+  const id = currentReceiptId;
+  const o = allOrders[id];
+  if (!o) throw new Error('order not found');
+
+  const DPR = 2;
+  const W = 420;
+  const PAD = 24;
+  const c = document.createElement('canvas');
+
+  // --- measure total height first ---
+  const products = o.products || [];
+  const total = o.total || products.reduce((s,p)=>s+(parseFloat(p.price)||0)*(parseFloat(p.qty)||1), 0);
+  const infoRows = [
+    ['\u0627\u0644\u0627\u0633\u0645', o.name],
+    o.phone ? ['\u0627\u0644\u0647\u0627\u062a\u0641', o.phone] : null,
+    ['\u0627\u0644\u0645\u062d\u0627\u0641\u0638\u0629', o.city],
+    o.address ? ['\u0627\u0644\u0639\u0646\u0648\u0627\u0646', o.address] : null,
+    ['\u0627\u0644\u062a\u0627\u0631\u064a\u062e', o.time],
+    ['\u0627\u0644\u062d\u0627\u0644\u0629', {pending:'\u062c\u062f\u064a\u062f',confirmed:'\u0645\u0624\u0643\u062f',shipped:'\u0634\u064f\u062d\u0646',done:'\u0645\u0646\u062c\u0632'}[o.status] || o.status]
+  ].filter(Boolean);
+
+  let H = 0;
+  H += 160; // banner
+  H += 20;  // wave
+  H += 30;  // section label: customer
+  H += infoRows.length * 36;
+  H += 30;  // section label: products
+  H += products.length * 64;
+  if (total > 0) H += 70;
+  if (o.notes) H += 60;
+  H += 30;  // section label: contact
+  H += 80;  // contact bar
+  H += 60;  // footer
+  H += 20;  // bottom pad
+
+  c.width = W * DPR;
+  c.height = H * DPR;
+  const ctx = c.getContext('2d');
+  ctx.scale(DPR, DPR);
+
+  // helpers
+  const arabic = (s) => s; // RTL text
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.lineTo(x+w-r, y); ctx.arcTo(x+w,y,x+w,y+r,r);
+    ctx.lineTo(x+w, y+h-r); ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+    ctx.lineTo(x+r, y+h); ctx.arcTo(x,y+h,x,y+h-r,r);
+    ctx.lineTo(x, y+r); ctx.arcTo(x,y,x+r,y,r);
+    ctx.closePath();
+  }
+
+  let y = 0;
+
+  // --- BANNER ---
+  const grad = ctx.createLinearGradient(0,0,W,160);
+  grad.addColorStop(0,'#2D1B4E'); grad.addColorStop(1,'#5B2D8E');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, 160);
+
+  // Logo image
+  const logoImg = new Image();
+  logoImg.crossOrigin = 'anonymous';
+  await new Promise((res) => {
+    logoImg.onload = res;
+    logoImg.onerror = res;
+    logoImg.src = 'icon-192.png';
+  });
+  if (logoImg.complete && logoImg.naturalWidth > 0) {
+    ctx.save();
+    roundRect(W/2-45, 12, 90, 90, 14);
+    ctx.clip();
+    ctx.drawImage(logoImg, W/2-45, 12, 90, 90);
+    ctx.restore();
+  }
+
+  // Order number badge
+  const orderNum = getOrderNumber(id);
+  ctx.font = 'bold 12px Arial';
+  ctx.fillStyle = '#F59E0B';
+  ctx.textAlign = 'center';
+  ctx.fillText('#' + orderNum + ' \u0637\u0644\u0628 \u0631\u0642\u0645', W/2, 148);
+  y = 160;
+
+  // --- WAVE ---
+  ctx.fillStyle = '#2D1B4E';
+  ctx.fillRect(0, y, W, 20);
+  ctx.beginPath();
+  ctx.arc(W/2, y+20, W/2+10, Math.PI, 0);
+  ctx.fillStyle = 'white';
+  ctx.fill();
+  y += 20;
+
+  // --- BODY ---
+  ctx.fillStyle = 'white';
+  ctx.fillRect(0, y, W, H - y);
+
+  function sectionLabel(label) {
+    ctx.font = 'bold 11px Arial';
+    ctx.fillStyle = '#8B5CF6';
+    ctx.textAlign = 'right';
+    ctx.fillText(label, W - PAD, y + 18);
+    ctx.strokeStyle = '#E5D9FF';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(PAD, y + 13);
+    ctx.lineTo(W - PAD - ctx.measureText(label).width - 8, y + 13);
+    ctx.stroke();
+    y += 30;
+  }
+
+  function infoRow(label, value, shaded) {
+    if (shaded) {
+      ctx.fillStyle = '#F8F5FF';
+      roundRect(PAD, y, W - PAD*2, 32, 8);
+      ctx.fill();
+    }
+    ctx.font = '600 12px Arial';
+    ctx.fillStyle = '#8B7AA0';
+    ctx.textAlign = 'right';
+    ctx.fillText(label, W - PAD - 4, y + 20);
+    ctx.font = 'bold 13px Arial';
+    ctx.fillStyle = '#1A1025';
+    ctx.textAlign = 'left';
+    const maxW = W - PAD*2 - 100;
+    let val = value;
+    while (ctx.measureText(val).width > maxW && val.length > 3) val = val.slice(0,-1)+'...';
+    ctx.fillText(val, PAD + 4, y + 20);
+    y += 36;
+  }
+
+  // Customer section
+  sectionLabel('\u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0632\u0628\u0648\u0646');
+  infoRows.forEach(([lbl, val], i) => infoRow(lbl, String(val), i % 2 === 0));
+
+  // Products section
+  sectionLabel('\u0627\u0644\u0645\u0646\u062a\u062c\u0627\u062a');
+  for (const p of products) {
+    ctx.fillStyle = '#F8F5FF';
+    roundRect(PAD, y, W - PAD*2, 56, 10);
+    ctx.fill();
+    ctx.strokeStyle = '#E5D9FF';
+    ctx.lineWidth = 1;
+    roundRect(PAD, y, W - PAD*2, 56, 10);
+    ctx.stroke();
+
+    // Product image
+    if (p.photo) {
+      try {
+        const pImg = new Image();
+        await new Promise((res) => {
+          pImg.onload = res; pImg.onerror = res;
+          pImg.src = p.photo;
+        });
+        if (pImg.naturalWidth > 0) {
+          ctx.save();
+          roundRect(PAD+6, y+6, 44, 44, 8);
+          ctx.clip();
+          ctx.drawImage(pImg, PAD+6, y+6, 44, 44);
+          ctx.restore();
+        }
+      } catch(e) {}
+    } else {
+      ctx.font = '24px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('\uD83E\uDDF5', PAD + 28, y + 34);
+    }
+
+    // Product name
+    ctx.font = 'bold 13px Arial';
+    ctx.fillStyle = '#2D1B4E';
+    ctx.textAlign = 'right';
+    ctx.fillText(p.name, W - PAD - 8, y + 22);
+
+    // Qty + unit
+    ctx.font = '11px Arial';
+    ctx.fillStyle = '#8B7AA0';
+    ctx.fillText(p.qty + ' ' + p.unit, W - PAD - 8, y + 40);
+
+    // Price
+    if (p.price) {
+      const priceStr = (p.price * p.qty).toLocaleString() + ' IQD';
+      ctx.font = 'bold 12px Arial';
+      ctx.fillStyle = '#10B981';
+      ctx.textAlign = 'left';
+      ctx.fillText(priceStr, PAD + 58, y + 34);
+    }
+    y += 64;
+  }
+
+  // Total box
+  if (total > 0) {
+    const tGrad = ctx.createLinearGradient(PAD, y, W-PAD, y+60);
+    tGrad.addColorStop(0,'#2D1B4E'); tGrad.addColorStop(1,'#5B2D8E');
+    ctx.fillStyle = tGrad;
+    roundRect(PAD, y, W-PAD*2, 60, 14);
+    ctx.fill();
+    ctx.font = 'bold 14px Arial';
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.textAlign = 'right';
+    ctx.fillText('\u0627\u0644\u0645\u062c\u0645\u0648\u0639 \u0627\u0644\u0643\u0644\u064a', W-PAD-10, y+26);
+    ctx.font = 'bold 11px Arial';
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.fillText('\u062f\u064a\u0646\u0627\u0631 \u0639\u0631\u0627\u0642\u064a', W-PAD-10, y+44);
+    ctx.font = 'bold 22px Arial';
+    ctx.fillStyle = '#F59E0B';
+    ctx.textAlign = 'left';
+    ctx.fillText(total.toLocaleString(), PAD+10, y+40);
+    y += 70;
+  }
+
+  // Notes
+  if (o.notes) {
+    ctx.fillStyle = '#FFFBEB';
+    roundRect(PAD, y, W-PAD*2, 52, 10);
+    ctx.fill();
+    ctx.fillStyle = '#FDE68A';
+    ctx.fillRect(PAD, y+8, 3, 36);
+    ctx.font = '12px Arial';
+    ctx.fillStyle = '#92400E';
+    ctx.textAlign = 'right';
+    ctx.fillText('\u0645\u0644\u0627\u062d\u0638\u0629: ' + o.notes, W-PAD-8, y+30);
+    y += 60;
+  }
+
+  // Contact section
+  sectionLabel('\u062a\u0648\u0627\u0635\u0644 \u0645\u0639\u0646\u0627');
+  ctx.fillStyle = '#F8F5FF';
+  roundRect(PAD, y, W-PAD*2, 70, 12);
+  ctx.fill();
+  ctx.strokeStyle = '#E5D9FF'; ctx.lineWidth = 1;
+  roundRect(PAD, y, W-PAD*2, 70, 12); ctx.stroke();
+
+  const contacts = [
+    ['\ud83d\udcf8', '@alialnahi.tools', '\u0627\u0646\u0633\u062a\u063a\u0631\u0627\u0645'],
+    ['\ud83d\udcac', '07703225019', '\u0648\u0627\u062a\u0633\u0627\u0628'],
+    ['\ud83d\ude9a', '5,000 IQD', '\u062a\u0648\u0635\u064a\u0644']
+  ];
+  const colW = (W - PAD*2) / 3;
+  contacts.forEach((ct, i) => {
+    const cx = W - PAD - colW*i - colW/2;
+    ctx.font = '18px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#1A1025';
+    ctx.fillText(ct[0], cx, y + 22);
+    ctx.font = 'bold 10px Arial';
+    ctx.fillStyle = i===2 ? '#10B981' : '#2D1B4E';
+    ctx.fillText(ct[1], cx, y + 40);
+    ctx.font = '10px Arial';
+    ctx.fillStyle = '#8B7AA0';
+    ctx.fillText(ct[2], cx, y + 54);
+    if (i < 2) {
+      ctx.strokeStyle = '#E5D9FF'; ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(W - PAD - colW*(i+1), y+10);
+      ctx.lineTo(W - PAD - colW*(i+1), y+60);
+      ctx.stroke();
+    }
+  });
+  y += 80;
+
+  // Footer
+  const fGrad = ctx.createLinearGradient(0,y,W,y+60);
+  fGrad.addColorStop(0,'#2D1B4E'); fGrad.addColorStop(1,'#5B2D8E');
+  ctx.fillStyle = fGrad;
+  ctx.fillRect(0, y, W, 60);
+  ctx.font = 'bold 13px Arial';
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.textAlign = 'center';
+  ctx.fillText('\u0634\u0643\u0631\u0627\u064b \u0644\u062b\u0642\u062a\u0643 \u0628\u0639\u0644\u064a \u0627\u0644\u0646\u0627\u0647\u064a', W/2, y + 26);
+  ctx.font = '11px Arial';
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.fillText('\u0646\u0648\u0635\u0644 \u0644\u062c\u0645\u064a\u0639 \u0645\u062d\u0627\u0641\u0638\u0627\u062a \u0627\u0644\u0639\u0631\u0627\u0642', W/2, y + 46);
+
+  return c.toDataURL('image/png', 1.0);
+}
+
+function showSaveOverlay(dataUrl) {
+  const ex = document.getElementById('imgSaveOv'); if (ex) ex.remove();
+  const ov = document.createElement('div');
+  ov.id = 'imgSaveOv';
+  Object.assign(ov.style, {position:'fixed',inset:'0',background:'rgba(0,0,0,0.93)',zIndex:'9999',display:'flex',flexDirection:'column',alignItems:'center',padding:'16px',overflowY:'auto',webkitOverflowScrolling:'touch',gap:'14px'});
+  const tip = document.createElement('div');
+  Object.assign(tip.style, {flexShrink:'0',width:'100%',maxWidth:'440px',color:'#F59E0B',fontFamily:'Tajawal,Arial,sans-serif',fontSize:'15px',fontWeight:'700',textAlign:'center',direction:'rtl',background:'rgba(245,158,11,0.15)',border:'1px solid rgba(245,158,11,0.4)',padding:'14px',borderRadius:'14px',lineHeight:'1.9'});
+  tip.innerHTML = '\u0627\u0636\u063a\u0637 \u0645\u0637\u0648\u0644\u0627\u064b \u0639\u0644\u0649 \u0627\u0644\u0635\u0648\u0631\u0629<br>\u062b\u0645 \u0627\u062e\u062a\u0631 <b>\"\u062d\u0641\u0638 \u0627\u0644\u0635\u0648\u0631\u0629\"</b>';
+  const cb = document.createElement('button');
+  Object.assign(cb.style, {flexShrink:'0',background:'rgba(255,255,255,0.12)',color:'white',border:'1px solid rgba(255,255,255,0.25)',padding:'11px 36px',borderRadius:'30px',fontFamily:'Tajawal,Arial,sans-serif',fontSize:'14px',fontWeight:'700',cursor:'pointer'});
+  cb.textContent = '\u0625\u063a\u0644\u0627\u0642';
+  cb.addEventListener('click', () => ov.remove());
+  const img = document.createElement('img');
+  img.src = dataUrl;
+  Object.assign(img.style, {width:'100%',maxWidth:'440px',borderRadius:'14px',display:'block'});
+  ov.appendChild(tip); ov.appendChild(cb); ov.appendChild(img);
   document.body.appendChild(ov);
 }
+
 
 function setFilter(f, btn) {
   curFilter = f;
