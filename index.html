@@ -926,7 +926,7 @@ async function buildReceiptCanvas() {
   ctx.font = 'bold 12px Arial';
   ctx.fillStyle = '#F59E0B';
   ctx.textAlign = 'center';
-  ctx.fillText('#' + orderNum + ' \u0637\u0644\u0628 \u0631\u0642\u0645', W/2, 148);
+  ctx.direction='rtl'; ctx.fillText('\u0637\u0644\u0628 \u0631\u0642\u0645 #' + orderNum, W/2, 148); ctx.direction='ltr';
   y = 160;
 
   // --- WAVE ---
@@ -943,6 +943,7 @@ async function buildReceiptCanvas() {
   ctx.fillRect(0, y, W, H - y);
 
   function sectionLabel(label) {
+    ctx.save(); ctx.direction='rtl';
     ctx.font = 'bold 11px Arial';
     ctx.fillStyle = '#8B5CF6';
     ctx.textAlign = 'right';
@@ -953,6 +954,7 @@ async function buildReceiptCanvas() {
     ctx.moveTo(PAD, y + 13);
     ctx.lineTo(W - PAD - ctx.measureText(label).width - 8, y + 13);
     ctx.stroke();
+    ctx.restore();
     y += 30;
   }
 
@@ -962,10 +964,11 @@ async function buildReceiptCanvas() {
       roundRect(PAD, y, W - PAD*2, 32, 8);
       ctx.fill();
     }
+    ctx.save(); ctx.direction='rtl';
     ctx.font = '600 12px Arial';
     ctx.fillStyle = '#8B7AA0';
     ctx.textAlign = 'right';
-    ctx.fillText(label, W - PAD - 4, y + 20);
+    ctx.fillText(label, W - PAD - 4, y + 20); ctx.restore();
     ctx.font = 'bold 13px Arial';
     ctx.fillStyle = '#1A1025';
     ctx.textAlign = 'left';
@@ -1014,15 +1017,15 @@ async function buildReceiptCanvas() {
     }
 
     // Product name
+    ctx.save(); ctx.direction='rtl';
     ctx.font = 'bold 13px Arial';
     ctx.fillStyle = '#2D1B4E';
     ctx.textAlign = 'right';
     ctx.fillText(p.name, W - PAD - 8, y + 22);
-
-    // Qty + unit
     ctx.font = '11px Arial';
     ctx.fillStyle = '#8B7AA0';
     ctx.fillText(p.qty + ' ' + p.unit, W - PAD - 8, y + 40);
+    ctx.restore();
 
     // Price
     if (p.price) {
@@ -1042,6 +1045,7 @@ async function buildReceiptCanvas() {
     ctx.fillStyle = tGrad;
     roundRect(PAD, y, W-PAD*2, 60, 14);
     ctx.fill();
+    ctx.save(); ctx.direction='rtl';
     ctx.font = 'bold 14px Arial';
     ctx.fillStyle = 'rgba(255,255,255,0.8)';
     ctx.textAlign = 'right';
@@ -1049,6 +1053,7 @@ async function buildReceiptCanvas() {
     ctx.font = 'bold 11px Arial';
     ctx.fillStyle = 'rgba(255,255,255,0.5)';
     ctx.fillText('\u062f\u064a\u0646\u0627\u0631 \u0639\u0631\u0627\u0642\u064a', W-PAD-10, y+44);
+    ctx.restore();
     ctx.font = 'bold 22px Arial';
     ctx.fillStyle = '#F59E0B';
     ctx.textAlign = 'left';
