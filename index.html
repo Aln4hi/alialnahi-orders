@@ -780,6 +780,12 @@ async function saveEdit() {
 }
 
 // ── RECEIPT ──
+function getOrderNumber(id) {
+  const keys = Object.keys(allOrders).sort();
+  const idx = keys.indexOf(id);
+  return idx >= 0 ? String(idx + 1).padStart(4, '0') : '0001';
+}
+
 function openReceipt(id) {
   const o = allOrders[id]; if (!o) return;
   const total = o.total || (o.products||[]).reduce((s,p) => s+(parseFloat(p.price)||0)*(parseFloat(p.qty)||1),0);
