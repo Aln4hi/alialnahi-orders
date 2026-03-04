@@ -311,195 +311,36 @@ body { font-family: 'Tajawal', sans-serif; background: var(--mist); min-height: 
 .save-edit-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--plum), var(--deep)); color: white; border: none; border-radius: 14px; font-family: 'Tajawal', sans-serif; font-size: 15px; font-weight: 800; cursor: pointer; margin-top: 8px; }
 .add-edit-prod-btn { width: 100%; padding: 9px; background: white; border: 2px dashed #FCD34D; border-radius: 10px; color: var(--plum); font-family: 'Tajawal', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; margin-bottom: 12px; }
 
-/* RECEIPT MODAL WRAPPER */
-.receipt-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 300; align-items: flex-end; justify-content: center; }
+/* RECEIPT */
+.receipt-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 300; align-items: center; justify-content: center; padding: 16px; }
 .receipt-overlay.open { display: flex; }
-.receipt-wrap { background: #F8F5FF; border-radius: 24px 24px 0 0; width: 100%; max-width: 480px; max-height: 88vh; display: flex; flex-direction: column; box-shadow: 0 -8px 40px rgba(0,0,0,0.4); overflow: hidden; }
-.receipt-handle { flex-shrink: 0; height: 20px; display: flex; align-items: center; justify-content: center; background: white; }
-.receipt-handle::after { content: ''; width: 40px; height: 4px; background: var(--border); border-radius: 4px; }
-.receipt-scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
-.receipt-actions { flex-shrink: 0; display: flex; gap: 10px; padding: 14px 16px 32px; background: white; border-top: 1px solid var(--border); box-shadow: 0 -4px 20px rgba(0,0,0,0.06); }
-.receipt-actions button { flex: 1; padding: 12px; border: none; border-radius: 12px; font-family: 'Tajawal', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
-.receipt-actions button:hover { transform: translateY(-1px); }
-.btn-save-img { background: linear-gradient(135deg, var(--plum), var(--deep)); color: white; box-shadow: 0 4px 12px rgba(91,45,142,0.3); }
-.btn-close-receipt { background: var(--mist); color: var(--soft); border: 1.5px solid var(--border) !important; }
-
-/* RECEIPT DESIGN */
-#receiptContent {
-  padding: 0;
-  background: white;
-  font-family: 'Tajawal', sans-serif;
-  width: 100%;
-}
-
-/* TOP BANNER */
-.rc-banner {
-  background: linear-gradient(135deg, #2D1B4E 0%, #5B2D8E 60%, #7C3AED 100%);
-  padding: 28px 24px 22px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-.rc-banner::before {
-  content: '';
-  position: absolute;
-  top: -30px; left: -30px;
-  width: 120px; height: 120px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.05);
-}
-.rc-banner::after {
-  content: '';
-  position: absolute;
-  bottom: -40px; right: -20px;
-  width: 100px; height: 100px;
-  border-radius: 50%;
-  background: rgba(245,158,11,0.1);
-}
-
-/* CSS LOGO */
-.rc-logo-wrap { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-.rc-logo-icon {
-  width: 48px; height: 48px;
-  background: linear-gradient(135deg, #F59E0B, #F97316);
-  border-radius: 14px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 26px;
-  box-shadow: 0 4px 16px rgba(245,158,11,0.4);
-  flex-shrink: 0;
-}
-.rc-logo-text { text-align: right; }
-.rc-logo-name {
-  font-size: 22px; font-weight: 900; color: white;
-  letter-spacing: -0.5px; line-height: 1.1;
-}
-.rc-logo-sub {
-  font-size: 11px; color: rgba(255,255,255,0.6);
-  font-weight: 500; margin-top: 2px;
-}
-.rc-order-badge {
-  display: inline-block;
-  background: rgba(245,158,11,0.2);
-  border: 1px solid rgba(245,158,11,0.4);
-  color: #F59E0B;
-  font-size: 11px; font-weight: 800;
-  padding: 4px 14px; border-radius: 20px;
-  margin-top: 6px; letter-spacing: 0.5px;
-}
-
-/* DIVIDER WAVE */
-.rc-wave {
-  height: 24px;
-  background: linear-gradient(135deg, #2D1B4E 0%, #5B2D8E 60%, #7C3AED 100%);
-  position: relative;
-  margin-bottom: 0;
-}
-.rc-wave::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 24px;
-  background: white;
-  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
-}
-
-/* BODY */
-.rc-body { padding: 20px 22px 0; background: white; }
-
-/* SECTION LABEL */
-.rc-section-label {
-  font-size: 10px; font-weight: 800; color: var(--violet);
-  letter-spacing: 1.5px; text-transform: uppercase;
-  margin-bottom: 10px; margin-top: 18px;
-  display: flex; align-items: center; gap: 6px;
-}
-.rc-section-label::after {
-  content: ''; flex: 1; height: 1px;
-  background: linear-gradient(90deg, var(--border), transparent);
-}
-
-/* INFO ROWS */
-.rc-info-grid { display: flex; flex-direction: column; gap: 0; margin-bottom: 4px; }
-.rc-info-row {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 9px 12px;
-  border-radius: 10px;
-  font-size: 13px;
-}
-.rc-info-row:nth-child(odd) { background: var(--mist); }
-.rc-info-label { color: var(--soft); font-weight: 600; }
-.rc-info-value { color: var(--ink); font-weight: 800; text-align: left; max-width: 55%; word-break: break-word; text-align: right; direction: rtl; }
-
-/* PRODUCTS */
-.rc-prod-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 12px; border-radius: 12px;
-  background: var(--mist); margin-bottom: 7px;
-  border: 1px solid var(--border);
-}
-.rc-prod-img { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; border: 2px solid var(--border); flex-shrink: 0; }
-.rc-prod-placeholder {
-  width: 44px; height: 44px; border-radius: 10px;
-  background: linear-gradient(135deg, var(--blush), var(--border));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px; flex-shrink: 0;
-}
-.rc-prod-info { flex: 1; }
-.rc-prod-name { font-size: 13px; font-weight: 800; color: var(--deep); }
-.rc-prod-detail { font-size: 11px; color: var(--soft); margin-top: 2px; }
-.rc-prod-price {
-  font-size: 13px; font-weight: 900; color: var(--mint);
-  background: #F0FDF4; border: 1px solid #A7F3D0;
-  border-radius: 8px; padding: 4px 10px; white-space: nowrap;
-}
-
-/* TOTAL BOX */
-.rc-total {
-  background: linear-gradient(135deg, #2D1B4E, #5B2D8E);
-  border-radius: 16px; padding: 16px 20px;
-  display: flex; justify-content: space-between; align-items: center;
-  margin: 16px 0; position: relative; overflow: hidden;
-}
-.rc-total::before {
-  content: '💰';
-  position: absolute; left: -5px; top: 50%;
-  transform: translateY(-50%);
-  font-size: 60px; opacity: 0.08;
-}
-.rc-total-label { color: rgba(255,255,255,0.8); font-size: 14px; font-weight: 700; }
-.rc-total-amount { color: #F59E0B; font-size: 26px; font-weight: 900; }
-.rc-total-currency { color: rgba(255,255,255,0.6); font-size: 12px; }
-
-/* NOTES */
-.rc-notes {
-  background: #FFFBEB; border-radius: 12px;
-  border: 1px solid #FDE68A;
-  padding: 12px 14px; margin-bottom: 14px;
-  font-size: 12px; color: #92400E; line-height: 1.6;
-}
-
-/* CONTACT STRIP */
-.rc-contact {
-  background: var(--mist); border-radius: 14px;
-  padding: 14px 16px; margin-bottom: 16px;
-  display: flex; justify-content: space-around; align-items: center;
-  border: 1px solid var(--border);
-}
-.rc-contact-item { text-align: center; }
-.rc-contact-icon { font-size: 18px; margin-bottom: 3px; }
-.rc-contact-val { font-size: 12px; font-weight: 800; color: var(--deep); }
-.rc-contact-lbl { font-size: 10px; color: var(--soft); font-weight: 600; }
-
-/* FOOTER */
-.rc-footer {
-  background: linear-gradient(135deg, #2D1B4E, #5B2D8E);
-  padding: 16px 20px; text-align: center;
-}
-.rc-footer-text { color: rgba(255,255,255,0.9); font-size: 13px; font-weight: 700; margin-bottom: 4px; }
-.rc-footer-sub { color: rgba(255,255,255,0.5); font-size: 11px; }
-.rc-footer-dots { display: flex; justify-content: center; gap: 5px; margin-top: 10px; }
-.rc-footer-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(245,158,11,0.5); }
-.rc-footer-dot:nth-child(2) { background: rgba(245,158,11,0.8); width: 14px; border-radius: 3px; }
+.receipt-wrap { background: white; border-radius: 20px; width: 100%; max-width: 400px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+.receipt-actions { display: flex; gap: 10px; padding: 16px; background: var(--mist); border-top: 1px solid var(--border); }
+.receipt-actions button { flex: 1; padding: 12px; border: none; border-radius: 12px; font-family: 'Tajawal', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
+.btn-save-img { background: var(--plum); color: white; }
+.btn-close-receipt { background: var(--mist); color: var(--text); border: 2px solid var(--border) !important; }
+#receiptContent { padding: 24px; background: white; font-family: 'Tajawal', sans-serif; }
+.receipt-header { text-align: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 2px dashed var(--border); }
+.receipt-logo { font-size: 36px; margin-bottom: 6px; }
+.receipt-shop { font-size: 20px; font-weight: 800; color: var(--deep); }
+.receipt-tagline { font-size: 12px; color: var(--soft); margin-top: 4px; }
+.receipt-info { margin-bottom: 16px; }
+.receipt-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px; }
+.receipt-row-label { color: var(--soft); font-weight: 600; }
+.receipt-row-value { color: var(--ink); font-weight: 700; text-align: left; }
+.receipt-products { margin-bottom: 16px; }
+.receipt-products h3 { font-size: 13px; font-weight: 800; color: var(--deep); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+.receipt-prod-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #F8F8F8; }
+.receipt-prod-img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); flex-shrink: 0; }
+.receipt-prod-placeholder { width: 40px; height: 40px; border-radius: 8px; background: var(--blush); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.receipt-prod-info { flex: 1; }
+.receipt-prod-name { font-size: 13px; font-weight: 700; color: var(--ink); }
+.receipt-prod-detail { font-size: 11px; color: var(--soft); }
+.receipt-prod-price { font-size: 13px; font-weight: 800; color: var(--mint); white-space: nowrap; }
+.receipt-total { background: linear-gradient(135deg, var(--deep), var(--plum)); border-radius: 12px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.receipt-total-label { color: rgba(255,255,255,0.8); font-size: 14px; font-weight: 700; }
+.receipt-total-amount { color: var(--gold); font-size: 22px; font-weight: 800; }
+.receipt-footer { text-align: center; font-size: 12px; color: var(--soft); padding-top: 12px; border-top: 2px dashed var(--border); }
 
 /* CHECKLIST */
 .ck-item { display: flex; align-items: flex-start; gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
@@ -519,11 +360,10 @@ body { font-family: 'Tajawal', sans-serif; background: var(--mist); min-height: 
 
 @media (max-width: 480px) {
   .two-col { grid-template-columns: 1fr; }
-  .prod-row-top { grid-template-columns: 1fr 50px 62px 72px auto; gap: 5px; }
-  .prod-row-top select { display: block; padding: 9px 2px; font-size: 11px; text-align: center; }
-  .edit-prod-top { grid-template-columns: 1fr 50px 62px 72px auto; gap: 5px; }
-  .edit-prod-top select { display: block; padding: 9px 2px; font-size: 11px; text-align: center; }
-  .prod-col-headers { grid-template-columns: 1fr 50px 62px 72px auto !important; gap: 5px !important; }
+  .prod-row-top { grid-template-columns: 1fr 55px 55px auto; }
+  .prod-row-top select { display: none; }
+  .edit-prod-top { grid-template-columns: 1fr 55px 55px auto; }
+  .edit-prod-top select { display: none; }
 }
 </style>
 </head>
@@ -633,9 +473,10 @@ body { font-family: 'Tajawal', sans-serif; background: var(--mist); min-height: 
 
         <div class="prod-box">
           <h3>🛍️ المنتجات المطلوبة</h3>
-          <div class="prod-col-headers" style="display:grid;grid-template-columns:1fr 58px 70px 80px auto;gap:7px;padding:0 0 8px;font-size:11px;font-weight:700;color:var(--soft);">
+          <div style="display:grid;grid-template-columns:1fr 58px 70px 80px auto;gap:7px;padding:0 0 8px;font-size:11px;font-weight:700;color:var(--soft);">
             <span>اسم المنتج</span><span style="text-align:center">كمية</span><span style="text-align:center">وحدة</span><span style="text-align:center;color:var(--mint)">💰 سعر</span><span></span>
           </div>
+          <div id="prodList"></div>
           <button class="add-row-btn" onclick="addProd('prodList')">+ أضف منتج آخر</button>
         </div>
 
@@ -710,7 +551,7 @@ body { font-family: 'Tajawal', sans-serif; background: var(--mist); min-height: 
 <div class="modal-overlay" id="editModal">
   <div class="modal">
     <div class="modal-title">✏️ تعديل الطلب <button class="modal-close" onclick="closeEditModal()">✕</button></div>
-    <div class="prod-col-headers" style="display:grid;grid-template-columns:1fr 58px 70px 80px auto;gap:7px;padding:0 0 8px;font-size:11px;font-weight:700;color:var(--soft);">
+    <div style="display:grid;grid-template-columns:1fr 58px 70px 80px auto;gap:7px;padding:0 0 8px;font-size:11px;font-weight:700;color:var(--soft);">
       <span>اسم المنتج</span><span style="text-align:center">كمية</span><span style="text-align:center">وحدة</span><span style="text-align:center;color:var(--mint)">💰 سعر</span><span></span>
     </div>
     <div id="editProdList"></div>
@@ -726,10 +567,7 @@ body { font-family: 'Tajawal', sans-serif; background: var(--mist); min-height: 
 <!-- RECEIPT MODAL -->
 <div class="receipt-overlay" id="receiptModal">
   <div class="receipt-wrap">
-    <div class="receipt-handle"></div>
-    <div class="receipt-scroll">
-      <div id="receiptContent"></div>
-    </div>
+    <div id="receiptContent"></div>
     <div class="receipt-actions">
       <button class="btn-save-img" onclick="saveReceiptAsImage()">📥 حفظ كصورة</button>
       <button class="btn-close-receipt" onclick="closeReceipt()">✕ إغلاق</button>
@@ -1240,350 +1078,54 @@ async function saveEdit() {
 // ══════════════════════════════════════════════
 //  RECEIPT
 // ══════════════════════════════════════════════
-
-function getOrderNumber(id) {
-  const keys = Object.keys(allOrders).sort();
-  const idx = keys.indexOf(id);
-  return idx >= 0 ? String(idx + 1).padStart(4, '0') : '0001';
-}
-
-let currentReceiptId = null;
-
 function openReceipt(id) {
-  currentReceiptId = id;
   const o = allOrders[id]; if (!o) return;
   const total = o.total || (o.products||[]).reduce((s,p)=>s+(parseFloat(p.price)||0)*(parseFloat(p.qty)||1),0);
   const sMap = { pending:'جديد ⏳', confirmed:'مؤكد ✅', shipped:'تم الشحن 🚚', done:'منجز 🎉' };
-  const orderNum = getOrderNumber(id);
-
   document.getElementById('receiptContent').innerHTML = `
-    <div class="rc-banner">
-      <div class="rc-logo-wrap">
-        <div class="rc-logo-icon">🧵</div>
-        <div class="rc-logo-text">
-          <div class="rc-logo-name">علي الناهي</div>
-          <div class="rc-logo-sub">أدوات الخياطة • الدانتيل • الاكسسوارات</div>
-        </div>
-      </div>
-      <div class="rc-order-badge">طلب رقم #${orderNum}</div>
+    <div class="receipt-header">
+      <div class="receipt-logo">🧵</div>
+      <div class="receipt-shop">علي الناهي</div>
+      <div class="receipt-tagline">أدوات الخياطة والدانتيل والاكسسوارات</div>
     </div>
-    <div class="rc-wave"></div>
-    <div class="rc-body">
-      <div class="rc-section-label">بيانات الزبون</div>
-      <div class="rc-info-grid">
-        <div class="rc-info-row"><span class="rc-info-label">👤 الاسم</span><span class="rc-info-value">${o.name}</span></div>
-        ${o.phone?`<div class="rc-info-row"><span class="rc-info-label">📞 الهاتف</span><span class="rc-info-value">${o.phone}</span></div>`:''}
-        <div class="rc-info-row"><span class="rc-info-label">🗺️ المحافظة</span><span class="rc-info-value">${o.city}</span></div>
-        ${o.address?`<div class="rc-info-row"><span class="rc-info-label">📍 العنوان</span><span class="rc-info-value">${o.address}</span></div>`:''}
-        <div class="rc-info-row"><span class="rc-info-label">🕐 التاريخ</span><span class="rc-info-value">${o.time}</span></div>
-        <div class="rc-info-row"><span class="rc-info-label">📦 الحالة</span><span class="rc-info-value">${sMap[o.status]||o.status}</span></div>
-      </div>
-      <div class="rc-section-label">المنتجات المطلوبة</div>
+    <div class="receipt-info">
+      <div class="receipt-row"><span class="receipt-row-label">الزبون</span><span class="receipt-row-value">${o.name}</span></div>
+      ${o.phone?`<div class="receipt-row"><span class="receipt-row-label">الهاتف</span><span class="receipt-row-value">${o.phone}</span></div>`:''}
+      <div class="receipt-row"><span class="receipt-row-label">المحافظة</span><span class="receipt-row-value">${o.city}</span></div>
+      ${o.address?`<div class="receipt-row"><span class="receipt-row-label">العنوان</span><span class="receipt-row-value">${o.address}</span></div>`:''}
+      <div class="receipt-row"><span class="receipt-row-label">التاريخ</span><span class="receipt-row-value">${o.time}</span></div>
+      <div class="receipt-row"><span class="receipt-row-label">الحالة</span><span class="receipt-row-value">${sMap[o.status]||o.status}</span></div>
+    </div>
+    <div class="receipt-products"><h3>🛍️ المنتجات</h3>
       ${(o.products||[]).map(p=>`
-        <div class="rc-prod-item">
-          ${p.photo?`<img class="rc-prod-img" src="${p.photo}">`:`<div class="rc-prod-placeholder">🧵</div>`}
-          <div class="rc-prod-info">
-            <div class="rc-prod-name">${p.name}</div>
-            <div class="rc-prod-detail">${p.qty} ${p.unit}${p.price?` × ${Number(p.price).toLocaleString()} IQD`:''}</div>
+        <div class="receipt-prod-row">
+          ${p.photo?`<img class="receipt-prod-img" src="${p.photo}">`:`<div class="receipt-prod-placeholder">🧵</div>`}
+          <div class="receipt-prod-info">
+            <div class="receipt-prod-name">${p.name}</div>
+            <div class="receipt-prod-detail">${p.qty} ${p.unit}${p.price?` × ${Number(p.price).toLocaleString()} IQD`:''}</div>
           </div>
-          ${p.price?`<div class="rc-prod-price">${(p.price*p.qty).toLocaleString()} IQD</div>`:''}
+          ${p.price?`<div class="receipt-prod-price">${(p.price*p.qty).toLocaleString()} IQD</div>`:''}
         </div>`).join('')}
-      ${total>0?`
-      <div class="rc-total">
-        <div><div class="rc-total-label">المجموع الكلي</div><div class="rc-total-currency">دينار عراقي</div></div>
-        <div class="rc-total-amount">${total.toLocaleString()}</div>
-      </div>`:''}
-      ${o.notes?`<div class="rc-notes"><strong>📝 ملاحظة:</strong> ${o.notes}</div>`:''}
-      <div class="rc-section-label">تواصل معنا</div>
-      <div class="rc-contact">
-        <div class="rc-contact-item">
-          <div class="rc-contact-icon">📸</div>
-          <div class="rc-contact-val">@alialnahi.tools</div>
-          <div class="rc-contact-lbl">انستغرام</div>
-        </div>
-        <div style="width:1px;height:40px;background:var(--border)"></div>
-        <div class="rc-contact-item">
-          <div class="rc-contact-icon">💬</div>
-          <div class="rc-contact-val">07703225019</div>
-          <div class="rc-contact-lbl">واتساب للطلبات</div>
-        </div>
-        <div style="width:1px;height:40px;background:var(--border)"></div>
-        <div class="rc-contact-item">
-          <div class="rc-contact-icon">🚚</div>
-          <div class="rc-contact-val" style="color:var(--mint)">5,000 IQD</div>
-          <div class="rc-contact-lbl">توصيل لكل العراق</div>
-        </div>
-      </div>
     </div>
-    <div class="rc-footer">
-      <div class="rc-footer-text">شكراً لثقتك بعلي الناهي 🙏</div>
-      <div class="rc-footer-sub">نسعى دائماً لتقديم أفضل المنتجات وأسرع التوصيل</div>
-      <div class="rc-footer-dots">
-        <div class="rc-footer-dot"></div>
-        <div class="rc-footer-dot"></div>
-        <div class="rc-footer-dot"></div>
-      </div>
-    </div>`;
-
+    ${total>0?`<div class="receipt-total"><div class="receipt-total-label">💰 المجموع الكلي</div><div class="receipt-total-amount">${total.toLocaleString()} IQD</div></div>`:''}
+    ${o.notes?`<div style="background:#FFFBEB;border-radius:10px;padding:10px;margin-bottom:16px;font-size:12px;color:#92400E;">📝 ${o.notes}</div>`:''}
+    <div class="receipt-footer">شكراً لتسوقك معنا 🙏<br>نوصل لجميع محافظات العراق 🇮🇶</div>`;
   document.getElementById('receiptModal').classList.add('open');
 }
-
 function closeReceipt() { document.getElementById('receiptModal').classList.remove('open'); }
-
 async function saveReceiptAsImage() {
-  const btn = document.querySelector('.btn-save-img');
-  if (btn) { btn.disabled = true; btn.textContent = '⏳...'; }
+  const el = document.getElementById('receiptContent');
   showToast('⏳ جاري تحضير الإيصال...');
   try {
-    const o = allOrders[currentReceiptId];
-    if (!o) throw new Error('no order');
-    const dataUrl = await drawReceiptCanvas(o, currentReceiptId);
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    if (isIOS) {
-      showSaveOverlay(dataUrl);
-    } else {
-      const a = document.createElement('a');
-      a.download = 'ali-alnahi-' + Date.now() + '.png';
-      a.href = dataUrl; a.click();
-      showToast('✅ تم حفظ الإيصال — أرسله للزبون!');
-    }
-  } catch(e) { showToast('❌ خطأ في الحفظ'); console.error(e); }
-  if (btn) { btn.disabled = false; btn.textContent = '📥 حفظ كصورة'; }
-}
-
-async function drawReceiptCanvas(o, id) {
-  const W = 420, PAD = 22, S = 2;
-  const orderNum = getOrderNumber(id);
-  const products = o.products || [];
-  const total = o.total || products.reduce((s,p)=>s+(parseFloat(p.price)||0)*(parseFloat(p.qty)||1),0);
-  const sMap = {pending:'جديد ⏳',confirmed:'مؤكد ✅',shipped:'تم الشحن 🚚',done:'منجز 🎉'};
-  const infoRows = [
-    ['👤 الاسم', o.name],
-    o.phone ? ['📞 الهاتف', o.phone] : null,
-    ['🗺️ المحافظة', o.city],
-    o.address ? ['📍 العنوان', o.address] : null,
-    ['🕐 التاريخ', o.time],
-    ['📦 الحالة', sMap[o.status] || o.status],
-  ].filter(Boolean);
-
-  const ROW_H = 34, PROD_H = 58, SEC_H = 34;
-  const bodyH = 14
-    + SEC_H + infoRows.length * ROW_H + 8
-    + SEC_H + products.length * PROD_H + 8
-    + (total > 0 ? 66 : 0)
-    + (o.notes ? 52 : 0)
-    + SEC_H + 80
-    + 14;
-  const TOTAL_H = 130 + 20 + bodyH + 68;
-
-  const c = document.createElement('canvas');
-  c.width = W * S; c.height = TOTAL_H * S;
-  const ctx = c.getContext('2d');
-  ctx.scale(S, S);
-
-  function rr(x, y, w, h, r) {
-    ctx.beginPath();
-    ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.arcTo(x+w,y,x+w,y+r,r);
-    ctx.lineTo(x+w,y+h-r); ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
-    ctx.lineTo(x+r,y+h); ctx.arcTo(x,y+h,x,y+h-r,r);
-    ctx.lineTo(x,y+r); ctx.arcTo(x,y,x+r,y,r);
-    ctx.closePath();
+    const canvas = await html2canvas(el, { scale:2, backgroundColor:'#ffffff', useCORS:true });
+    const link = document.createElement('a');
+    link.download = 'receipt-'+Date.now()+'.png'; link.href = canvas.toDataURL('image/png'); link.click();
+    showToast('✅ تم حفظ الإيصال — أرسله للزبون!');
+  } catch(e) {
+    const w = window.open('','_blank');
+    w.document.write('<html><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet"><style>body{font-family:Tajawal,sans-serif;direction:rtl;padding:20px;max-width:400px;margin:auto}</style></head><body>'+el.innerHTML+'</body></html>');
+    w.document.close(); setTimeout(()=>w.print(),500);
   }
-
-  let y = 0;
-
-  // ── BANNER ──
-  const bg = ctx.createLinearGradient(0,0,W,130);
-  bg.addColorStop(0,'#2D1B4E'); bg.addColorStop(0.6,'#5B2D8E'); bg.addColorStop(1,'#7C3AED');
-  ctx.fillStyle = bg; ctx.fillRect(0,0,W,130);
-
-  // Logo icon
-  const lg = ctx.createLinearGradient(PAD,20,PAD+48,68);
-  lg.addColorStop(0,'#F59E0B'); lg.addColorStop(1,'#F97316');
-  ctx.fillStyle = lg; rr(PAD,20,48,48,14); ctx.fill();
-  ctx.font='26px Arial'; ctx.textAlign='center'; ctx.fillStyle='white';
-  ctx.fillText('🧵', PAD+24, 20+32);
-
-  // Shop name + tagline
-  ctx.direction='rtl';
-  ctx.font='900 22px Arial'; ctx.fillStyle='white'; ctx.textAlign='left';
-  ctx.fillText('علي الناهي', PAD+60, 20+20);
-  ctx.font='11px Arial'; ctx.fillStyle='rgba(255,255,255,0.6)';
-  ctx.fillText('أدوات الخياطة • الدانتيل • الاكسسوارات', PAD+60, 20+38);
-  ctx.direction='ltr';
-
-  // Order badge
-  ctx.font='800 12px Arial';
-  const badgeTxt = 'طلب رقم #' + orderNum;
-  const bw = ctx.measureText(badgeTxt).width + 28;
-  ctx.direction='rtl';
-  rr((W-bw)/2, 84, bw, 26, 13);
-  ctx.fillStyle='rgba(245,158,11,0.2)'; ctx.fill();
-  ctx.strokeStyle='rgba(245,158,11,0.5)'; ctx.lineWidth=1; ctx.stroke();
-  ctx.fillStyle='#F59E0B'; ctx.textAlign='center';
-  ctx.fillText(badgeTxt, W/2, 84+17);
-  ctx.direction='ltr';
-  y = 130;
-
-  // ── WAVE ──
-  const wg = ctx.createLinearGradient(0,y,W,y+20);
-  wg.addColorStop(0,'#2D1B4E'); wg.addColorStop(1,'#7C3AED');
-  ctx.fillStyle=wg; ctx.fillRect(0,y,W,20);
-  ctx.fillStyle='white'; ctx.beginPath();
-  ctx.arc(W/2, y+20, W/2+20, Math.PI, 0); ctx.fill();
-  y += 20;
-
-  // ── BODY background ──
-  ctx.fillStyle='white'; ctx.fillRect(0,y,W,bodyH+68);
-  y += 14;
-
-  // section label helper
-  function secLabel(txt) {
-    ctx.font='800 12px Arial'; ctx.fillStyle='#8B5CF6';
-    ctx.textAlign='right'; ctx.direction='rtl';
-    ctx.fillText(txt, W-PAD, y+22);
-    ctx.direction='ltr';
-    const lw = ctx.measureText(txt).width;
-    ctx.strokeStyle='#E5D9FF'; ctx.lineWidth=1;
-    ctx.beginPath(); ctx.moveTo(PAD,y+13); ctx.lineTo(W-PAD-lw-10,y+13); ctx.stroke();
-    y += SEC_H;
-  }
-
-  // info row helper
-  function infoRow(lbl, val, shaded) {
-    if (shaded) { ctx.fillStyle='#F8F5FF'; rr(PAD,y,W-PAD*2,ROW_H-2,8); ctx.fill(); }
-    ctx.font='600 12px Arial'; ctx.fillStyle='#8B7AA0';
-    ctx.textAlign='right'; ctx.direction='rtl';
-    ctx.fillText(lbl, W-PAD-6, y+ROW_H/2+4);
-    ctx.font='800 13px Arial'; ctx.fillStyle='#1A1025';
-    ctx.textAlign='left'; ctx.direction='ltr';
-    ctx.fillText(String(val), PAD+6, y+ROW_H/2+4, W-PAD*2-ctx.measureText(lbl).width-24);
-    y += ROW_H;
-  }
-
-  // ── Customer info ──
-  secLabel('بيانات الزبون');
-  infoRows.forEach(([l,v],i) => infoRow(l,v,i%2===0));
-  y += 8;
-
-  // ── Products ──
-  secLabel('المنتجات المطلوبة');
-  for (const p of products) {
-    ctx.fillStyle='#F8F5FF'; rr(PAD,y,W-PAD*2,PROD_H-6,12); ctx.fill();
-    ctx.strokeStyle='#E5D9FF'; ctx.lineWidth=1; rr(PAD,y,W-PAD*2,PROD_H-6,12); ctx.stroke();
-
-    // product photo or placeholder
-    if (p.photo) {
-      try {
-        const pImg = new Image();
-        pImg.crossOrigin = 'anonymous';
-        await new Promise((res) => { pImg.onload=res; pImg.onerror=res; pImg.src=p.photo; });
-        if (pImg.naturalWidth > 0) {
-          ctx.save(); rr(PAD+8,y+7,38,38,10); ctx.clip();
-          ctx.drawImage(pImg,PAD+8,y+7,38,38); ctx.restore();
-        } else { throw new Error('load failed'); }
-      } catch(_) {
-        ctx.fillStyle='#EDE9FE'; rr(PAD+8,y+7,38,38,10); ctx.fill();
-        ctx.font='20px Arial'; ctx.textAlign='center'; ctx.fillText('🧵',PAD+8+19,y+7+26);
-      }
-    } else {
-      ctx.fillStyle='#EDE9FE'; rr(PAD+8,y+7,38,38,10); ctx.fill();
-      ctx.font='20px Arial'; ctx.textAlign='center'; ctx.fillText('🧵',PAD+8+19,y+7+26);
-    }
-
-    // product name (right side)
-    ctx.font='800 13px Arial'; ctx.fillStyle='#2D1B4E';
-    ctx.textAlign='right'; ctx.direction='rtl';
-    ctx.fillText(p.name, W-PAD-8, y+20, W-PAD*2-120);
-    // qty + unit
-    ctx.font='11px Arial'; ctx.fillStyle='#8B7AA0';
-    ctx.fillText(p.qty+' '+p.unit, W-PAD-8, y+36);
-    ctx.direction='ltr';
-
-    // price badge (left side)
-    if (p.price) {
-      const pr = (p.price*p.qty).toLocaleString()+' IQD';
-      ctx.font='900 12px Arial';
-      const pw = ctx.measureText(pr).width+20;
-      rr(PAD+52,y+12,pw,24,8); ctx.fillStyle='#F0FDF4'; ctx.fill();
-      ctx.strokeStyle='#A7F3D0'; ctx.lineWidth=1; ctx.stroke();
-      ctx.fillStyle='#10B981'; ctx.textAlign='left';
-      ctx.fillText(pr, PAD+52+10, y+12+16);
-    }
-    y += PROD_H;
-  }
-  y += 8;
-
-  // ── Total ──
-  if (total > 0) {
-    const tg = ctx.createLinearGradient(PAD,y,W-PAD,y+60);
-    tg.addColorStop(0,'#2D1B4E'); tg.addColorStop(1,'#5B2D8E');
-    ctx.fillStyle=tg; rr(PAD,y,W-PAD*2,60,16); ctx.fill();
-    ctx.direction='rtl'; ctx.textAlign='right';
-    ctx.font='700 14px Arial'; ctx.fillStyle='rgba(255,255,255,0.8)';
-    ctx.fillText('المجموع الكلي', W-PAD-14, y+22);
-    ctx.font='12px Arial'; ctx.fillStyle='rgba(255,255,255,0.55)';
-    ctx.fillText('دينار عراقي', W-PAD-14, y+40);
-    ctx.direction='ltr'; ctx.textAlign='left';
-    ctx.font='900 26px Arial'; ctx.fillStyle='#F59E0B';
-    ctx.fillText(total.toLocaleString(), PAD+14, y+38);
-    y += 66;
-  }
-
-  // ── Notes ──
-  if (o.notes) {
-    ctx.fillStyle='#FFFBEB'; rr(PAD,y,W-PAD*2,46,12); ctx.fill();
-    ctx.strokeStyle='#FDE68A'; ctx.lineWidth=1; rr(PAD,y,W-PAD*2,46,12); ctx.stroke();
-    ctx.font='12px Arial'; ctx.fillStyle='#92400E';
-    ctx.textAlign='right'; ctx.direction='rtl';
-    ctx.fillText('📝 ملاحظة: '+o.notes, W-PAD-10, y+27, W-PAD*2-20);
-    ctx.direction='ltr'; y += 52;
-  }
-
-  // ── Contact ──
-  secLabel('تواصل معنا');
-  ctx.fillStyle='#F8F5FF'; rr(PAD,y,W-PAD*2,72,14); ctx.fill();
-  ctx.strokeStyle='#E5D9FF'; ctx.lineWidth=1; rr(PAD,y,W-PAD*2,72,14); ctx.stroke();
-  const cols = [['📸','@alialnahi.tools','انستغرام','#2D1B4E'],['💬','07703225019','واتساب','#2D1B4E'],['🚚','5,000 IQD','توصيل','#10B981']];
-  const cw = (W-PAD*2)/3;
-  cols.forEach(([ic,val,lbl,col],i) => {
-    const cx = PAD + cw*i + cw/2;
-    ctx.font='18px Arial'; ctx.textAlign='center'; ctx.fillStyle='#1A1025'; ctx.fillText(ic,cx,y+22);
-    ctx.font='800 10px Arial'; ctx.fillStyle=col; ctx.fillText(val,cx,y+38);
-    ctx.font='600 10px Arial'; ctx.fillStyle='#8B7AA0'; ctx.fillText(lbl,cx,y+52);
-    if(i<2){ctx.strokeStyle='#E5D9FF';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(PAD+cw*(i+1),y+10);ctx.lineTo(PAD+cw*(i+1),y+62);ctx.stroke();}
-  });
-  y += 80;
-
-  // ── FOOTER ──
-  const fg = ctx.createLinearGradient(0,y,W,y+68);
-  fg.addColorStop(0,'#2D1B4E'); fg.addColorStop(1,'#5B2D8E');
-  ctx.fillStyle=fg; ctx.fillRect(0,y,W,68);
-  ctx.direction='rtl'; ctx.textAlign='center';
-  ctx.font='700 13px Arial'; ctx.fillStyle='rgba(255,255,255,0.9)';
-  ctx.fillText('شكراً لثقتك بعلي الناهي 🙏', W/2, y+26);
-  ctx.font='11px Arial'; ctx.fillStyle='rgba(255,255,255,0.5)';
-  ctx.fillText('نسعى دائماً لتقديم أفضل المنتجات وأسرع التوصيل', W/2, y+46);
-  ctx.direction='ltr';
-
-  return c.toDataURL('image/png',1.0);
-}
-
-function showSaveOverlay(dataUrl) {
-  const ex = document.getElementById('imgSaveOv'); if(ex) ex.remove();
-  const ov = document.createElement('div');
-  ov.id = 'imgSaveOv';
-  Object.assign(ov.style,{position:'fixed',inset:'0',background:'rgba(0,0,0,0.93)',zIndex:'9999',display:'flex',flexDirection:'column',alignItems:'center',padding:'16px',overflowY:'auto',WebkitOverflowScrolling:'touch',gap:'14px'});
-  const tip = document.createElement('div');
-  Object.assign(tip.style,{flexShrink:'0',width:'100%',maxWidth:'440px',color:'#F59E0B',fontFamily:'Tajawal,Arial,sans-serif',fontSize:'15px',fontWeight:'700',textAlign:'center',direction:'rtl',background:'rgba(245,158,11,0.15)',border:'1px solid rgba(245,158,11,0.4)',padding:'14px',borderRadius:'14px',lineHeight:'1.9'});
-  tip.innerHTML = '📸 اضغط مطولاً على الصورة<br>ثم اختر <b>"حفظ الصورة"</b>';
-  const cb = document.createElement('button');
-  Object.assign(cb.style,{flexShrink:'0',background:'rgba(255,255,255,0.12)',color:'white',border:'1px solid rgba(255,255,255,0.25)',padding:'11px 36px',borderRadius:'30px',fontFamily:'Tajawal,Arial,sans-serif',fontSize:'14px',fontWeight:'700',cursor:'pointer'});
-  cb.textContent = '✕ إغلاق'; cb.addEventListener('click',()=>ov.remove());
-  const img = document.createElement('img'); img.src = dataUrl;
-  Object.assign(img.style,{width:'100%',maxWidth:'440px',borderRadius:'14px',display:'block'});
-  ov.appendChild(tip); ov.appendChild(cb); ov.appendChild(img);
-  document.body.appendChild(ov);
 }
 
 // ══════════════════════════════════════════════
